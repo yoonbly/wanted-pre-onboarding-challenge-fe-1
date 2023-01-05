@@ -2,6 +2,11 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ResponseType } from "../types/auth";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import FormControl from "@mui/material/FormControl";
+import Grid from "@mui/material/Grid";
+import { Button } from "@mui/material";
 
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
@@ -31,7 +36,7 @@ const SignUpForm = () => {
     }
     setPassword(currentpassword);
   };
-  const onChangePwConfirm = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangePwConfirm = (e: React.ChangeEvent<HTMLInputElement>) => {
     const confirmpassword = e.target.value;
     if (password == confirmpassword) {
       setPwconfirmVali(true);
@@ -51,7 +56,7 @@ const SignUpForm = () => {
       setPassword("");
       setPwConfirm("");
       alert(res.data.message);
-      navigate("/login");
+      navigate("/auth");
     } catch (err) {
       console.log(err);
     }
@@ -59,53 +64,77 @@ const SignUpForm = () => {
 
   return (
     <div>
-      <h3>Sign up</h3>
-      <form onSubmit={onSubmit}>
-        <label htmlFor="email">
-          이메일
-          <input
-            type="email"
-            id="email"
-            placeholder="이메일"
-            value={email}
-            onChange={onChangeEmail}
-          />
-        </label>
-        {!emailVali && email.length ? (
-          <span>이메일 형식이 아닙니다.</span>
-        ) : null}
-        <label htmlFor="password">
-          비밀번호
-          <input
-            type="password"
-            id="password"
-            placeholder="비밀번호"
-            value={password}
-            onChange={onChangePassword}
-          />
-        </label>
-        {!passwordVali && password.length ? (
-          <span>비밀번호는 숫자, 영문자를 포함한 8글자 이상이어야 합니다.</span>
-        ) : null}
-        <label htmlFor="passwordConfirm">
-          비밀번호 확인
-          <input
-            type="password"
-            id="passwordConfirm"
-            placeholder="비밀번호 확인"
-            value={pwconfirm}
-            onChange={onChangePwConfirm}
-          />
-        </label>
-        {!pwconfirmVali && pwconfirm.length ? (
-          <span>비밀번호가 일치하지 않습니다.</span>
-        ) : null}
-        <button
-          disabled={passwordVali && pwconfirmVali && emailVali ? false : true}
-        >
-          제출
-        </button>
-      </form>
+      <h3 style={{ textAlign: "center" }}>회원가입</h3>
+      <Box
+        component="form"
+        sx={{
+          "& > :not(style)": { m: 1, width: "25ch" },
+        }}
+        noValidate
+        autoComplete="off"
+        onSubmit={onSubmit}
+      >
+        <FormControl component="fieldset" variant="standard">
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                id="outlined-basic"
+                label="이메일"
+                variant="outlined"
+                type="email"
+                value={email}
+                onChange={onChangeEmail}
+                error={!emailVali && email.length ? true : false}
+                helperText={
+                  !emailVali && email.length ? "이메일 형식이 아닙니다." : ""
+                }
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                id="outlined-basic"
+                label="비밀번호"
+                variant="outlined"
+                type="password"
+                value={password}
+                onChange={onChangePassword}
+                error={!passwordVali && password.length ? true : false}
+                helperText={
+                  !passwordVali && password.length
+                    ? "비밀번호는 숫자, 영문자를 포함한 8글자 이상이어야 합니다."
+                    : ""
+                }
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                id="outlined-basic"
+                label="비밀번호 확인"
+                variant="outlined"
+                type="password"
+                value={pwconfirm}
+                onChange={onChangePwConfirm}
+                error={!pwconfirmVali && pwconfirm.length ? true : false}
+                helperText={
+                  !pwconfirmVali && pwconfirm.length
+                    ? "비밀번호가 일치하지 않습니다."
+                    : ""
+                }
+              />
+            </Grid>
+          </Grid>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            size="large"
+            disabled={passwordVali && pwconfirmVali && emailVali ? false : true}
+          >
+            회원가입
+          </Button>
+        </FormControl>
+      </Box>
     </div>
   );
 };

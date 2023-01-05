@@ -1,3 +1,4 @@
+import { Box, Button, FormControl, Grid, TextField } from "@mui/material";
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -37,6 +38,7 @@ const LoginForm = () => {
       const res: ResponseType = await axios.post("/users/login", data);
       setEmail("");
       setPassword("");
+      localStorage.setItem("token", res.data.token);
       alert(res.data.message);
       navigate("/");
     } catch (err) {
@@ -45,38 +47,61 @@ const LoginForm = () => {
   };
   return (
     <div>
-      <h3>Login</h3>
-      <form onSubmit={onSubmit}>
-        <label htmlFor="email">
-          이메일
-          <input
-            type="email"
-            id="email"
-            placeholder="이메일"
-            value={email}
-            onChange={onChangeEmail}
-          />
-        </label>
-        {!emailVali && email.length ? (
-          <span>이메일 형식이 아닙니다.</span>
-        ) : null}
-        <label htmlFor="password">
-          비밀번호
-          <input
-            type="password"
-            id="password"
-            placeholder="비밀번호"
-            value={password}
-            onChange={onChangePassword}
-          />
-        </label>
-        {!passwordVali && password.length ? (
-          <span>비밀번호는 숫자, 영문자를 포함한 8글자 이상이어야 합니다.</span>
-        ) : null}
-        <button disabled={passwordVali && emailVali ? false : true}>
-          제출
-        </button>
-      </form>
+      <h3 style={{ textAlign: "center" }}>로그인</h3>
+      <Box
+        component="form"
+        sx={{
+          "& > :not(style)": { m: 1, width: "25ch" },
+        }}
+        noValidate
+        autoComplete="off"
+        onSubmit={onSubmit}
+      >
+        <FormControl component="fieldset" variant="standard">
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                id="outlined-basic"
+                label="이메일"
+                variant="outlined"
+                type="email"
+                value={email}
+                onChange={onChangeEmail}
+                error={!emailVali && email.length ? true : false}
+                helperText={
+                  !emailVali && email.length ? "이메일 형식이 아닙니다." : ""
+                }
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                id="outlined-basic"
+                label="비밀번호"
+                variant="outlined"
+                type="password"
+                value={password}
+                onChange={onChangePassword}
+                error={!passwordVali && password.length ? true : false}
+                helperText={
+                  !passwordVali && password.length
+                    ? "비밀번호는 숫자, 영문자를 포함한 8글자 이상이어야 합니다."
+                    : ""
+                }
+              />
+            </Grid>
+          </Grid>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            size="large"
+            disabled={passwordVali && emailVali ? false : true}
+          >
+            로그인
+          </Button>
+        </FormControl>
+      </Box>
     </div>
   );
 };
