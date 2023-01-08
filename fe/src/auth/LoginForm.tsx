@@ -1,15 +1,16 @@
 import { Box, Button, FormControl, Grid, TextField } from "@mui/material";
-import axios from "axios";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ResponseType } from "../types/auth";
+import { userLogin } from "../api/authApi";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
   const [emailVali, setEmailVali] = useState(false);
   const [passwordVali, setPasswordVali] = useState(false);
+  const data = {
+    email,
+    password,
+  };
   const validation = {
     email: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g,
     password: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}/g,
@@ -28,22 +29,9 @@ const LoginForm = () => {
     }
     setPassword(currentpassword);
   };
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const data = {
-      email,
-      password,
-    };
-    try {
-      const res: ResponseType = await axios.post("/users/login", data);
-      setEmail("");
-      setPassword("");
-      localStorage.setItem("token", res.data.token);
-      alert(res.data.message);
-      navigate("/");
-    } catch (err) {
-      console.log(err);
-    }
+    userLogin(data);
   };
   return (
     <div>

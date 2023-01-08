@@ -1,19 +1,19 @@
-import axios from "axios";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ResponseType } from "../types/auth";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import FormControl from "@mui/material/FormControl";
 import Grid from "@mui/material/Grid";
 import { Button } from "@mui/material";
+import { userCreate } from "../api/authApi";
 
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [pwconfirm, setPwConfirm] = useState("");
-  const navigate = useNavigate();
-  // validation
+  const data = {
+    email,
+    password,
+  };
   const [emailVali, setEmailVali] = useState(false);
   const [passwordVali, setPasswordVali] = useState(false);
   const [pwconfirmVali, setPwconfirmVali] = useState(false);
@@ -21,7 +21,7 @@ const SignUpForm = () => {
     email: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g,
     password: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}/g,
   };
-  // onChange
+
   const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     const currentEmail = e.target.value;
     if (!currentEmail || validation.email.test(currentEmail)) {
@@ -43,23 +43,10 @@ const SignUpForm = () => {
     }
     setPwConfirm(confirmpassword);
   };
-  // submit
+
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const data = {
-      email,
-      password,
-    };
-    try {
-      const res: ResponseType = await axios.post("/users/create", data);
-      setEmail("");
-      setPassword("");
-      setPwConfirm("");
-      alert(res.data.message);
-      navigate("/auth");
-    } catch (err) {
-      console.log(err);
-    }
+    userCreate(data);
   };
 
   return (

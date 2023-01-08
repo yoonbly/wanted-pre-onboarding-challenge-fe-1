@@ -1,10 +1,9 @@
-import { Button, Modal } from "@mui/material";
-import axios from "axios";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Button } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import Todocreate from "../todo/TodoCreate";
 import { useNavigate } from "react-router-dom";
+import { deleteTodo, getTodo } from "../api/todosApi";
 
-type ResponseType = Record<string, any>;
 interface TodoObject {
   content: string;
   createdAt: string;
@@ -16,28 +15,14 @@ interface TodoObject {
 const TodoList = () => {
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [done, setDone] = useState(false);
   const [todos, setTodos] = useState([]);
   const [id, setId] = useState("");
   const navigate = useNavigate();
-  const getTodo = async () => {
-    const res: ResponseType = await axios.get("/todos", {
-      headers: {
-        authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-    return res.data;
-  };
-  const deleteTodo = async (id: string) => {
-    await axios.delete(`/todos/${id}`, {
-      headers: {
-        authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-  };
+
   useEffect(() => {
     getTodo().then((data) => setTodos(data.data));
   }, [todos]);
+
   const onEditHandler = (id: string) => {
     setShowModal(true);
     setIsEdit(true);
@@ -96,7 +81,6 @@ const TodoList = () => {
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  textDecoration: `${done ? "line-through" : ""}`,
                 }}
               >
                 {item.title}

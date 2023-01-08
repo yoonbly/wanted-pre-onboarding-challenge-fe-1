@@ -6,23 +6,16 @@ import {
   Modal,
   TextField,
 } from "@mui/material";
-import axios from "axios";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 
-type ResponseType = Record<string, any>;
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { createTodo, getTodoById, updateTodo } from "../api/todosApi";
+
 interface ModalType {
   showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
   isEdit: boolean;
   setIsEdit: Dispatch<SetStateAction<boolean>>;
   id: string;
-}
-interface TodoObject {
-  content: string;
-  createdAt: string;
-  id: string;
-  title: string;
-  updatedAt: string;
 }
 
 const Todocreate = ({
@@ -34,24 +27,20 @@ const Todocreate = ({
 }: ModalType) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const data = {
+    title,
+    content,
+  };
   const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   };
   const onChangeContent = (e: React.ChangeEvent<HTMLInputElement>) => {
     setContent(e.target.value);
   };
-  const data = {
-    title,
-    content,
-  };
-  const addTodo = async (e: React.FormEvent<HTMLFormElement>) => {
+  const onCreateHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const res: ResponseType = await axios.post("/todos", data, {
-        headers: {
-          authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      createTodo(data);
       setTitle("");
       setContent("");
       setIsEdit(false);
@@ -60,14 +49,10 @@ const Todocreate = ({
       console.log(err);
     }
   };
-  const editTodo = async (e: React.FormEvent<HTMLFormElement>) => {
+  const onUpdateHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const res: ResponseType = await axios.put(`/todos/${id}`, data, {
-        headers: {
-          authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      updateTodo(data, id);
       setTitle("");
       setContent("");
       setIsEdit(false);
@@ -75,18 +60,9 @@ const Todocreate = ({
     } catch (err) {
       console.log(err);
     }
-  };
-
-  const getTodoById = async () => {
-    const res: ResponseType = await axios.get(`/todos/${id}`, {
-      headers: {
-        authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-    return res.data;
   };
   useEffect(() => {
-    getTodoById().then((data) => {
+    getTodoById(id).then((data) => {
       if (isEdit) {
         setTitle(data.data.title);
         setContent(data.data.content);
@@ -106,7 +82,7 @@ const Todocreate = ({
           sx={style}
           noValidate
           autoComplete="off"
-          onSubmit={isEdit ? editTodo : addTodo}
+          onSubmit={isEdit ? onUpdateHandler : onCreateHandler}
         >
           <FormControl component="fieldset" variant="standard">
             <Grid container spacing={2}>
