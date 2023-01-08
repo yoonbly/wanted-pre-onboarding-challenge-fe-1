@@ -21,13 +21,12 @@
 <img src="https://user-images.githubusercontent.com/81467705/211180116-89e976ea-a3ab-412a-ba16-8c310ee2e848.gif" width="700" height="600">
 
 ### 4. 실행 방법
-백엔드:
+서버
 ``` 
 1. 디렉토리 이동 api
 2. yarn start
 ```
-
-프론트엔드:
+프론트
 ```
 1. 디렉토리 이동 fe
 2. npm start
