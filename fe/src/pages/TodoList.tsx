@@ -1,8 +1,9 @@
 import { Button } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import Todocreate from "../todo/TodoCreate";
+import Todocreate from "../components/TodoCreate";
 import { useNavigate } from "react-router-dom";
 import { deleteTodo, getTodo } from "../api/todosApi";
+import { FormBox, TodoBox } from "../styles/pageStyles";
 
 interface TodoObject {
   content: string;
@@ -32,6 +33,11 @@ const TodoList = () => {
     setShowModal(true);
     setIsEdit(false);
   };
+  const onDeleteHandler = (id: string) => {
+    if (window.confirm("삭제하시겠습니까?")) {
+      deleteTodo(id);
+    }
+  };
 
   return (
     <div>
@@ -44,37 +50,17 @@ const TodoList = () => {
           setIsEdit={setIsEdit}
         />
       )}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Button
-          variant="outlined"
-          onClick={() => navigate("/")}
-          style={{ marginBottom: "10px" }}
-        >
+      <FormBox>
+        <Button variant="outlined" onClick={() => navigate("/")}>
           홈으로 가기
         </Button>
         <Button variant="contained" onClick={onAddHandler}>
           할일 추가하기
         </Button>
-      </div>
+      </FormBox>
       <div style={{ marginTop: "10px" }}>
         {todos.map((item: TodoObject) => (
-          <div
-            key={item.id}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: "400px",
-              borderBottom: "1px solid gray",
-            }}
-          >
+          <TodoBox key={item.id}>
             <ul>
               <li
                 style={{
@@ -88,11 +74,11 @@ const TodoList = () => {
             </ul>
             <div>
               <Button onClick={() => onEditHandler(item.id)}>수정</Button>
-              <Button onClick={() => deleteTodo(item.id)} color="error">
+              <Button onClick={() => onDeleteHandler(item.id)} color="error">
                 삭제
               </Button>
             </div>
-          </div>
+          </TodoBox>
         ))}
       </div>
     </div>

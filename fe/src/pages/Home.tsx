@@ -1,6 +1,7 @@
 import { Button } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FormBox, HomeText } from "../styles/pageStyles";
 
 const Home = () => {
   const [isLogin, setIsLogin] = useState(false);
@@ -19,30 +20,31 @@ const Home = () => {
       navigate("/");
     };
     return (
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <Button
-          onClick={clearStorage}
-          variant="outlined"
-          style={{ marginBottom: "10px" }}
-        >
+      <FormBox>
+        <Button onClick={clearStorage} variant="outlined">
           로그아웃
         </Button>
         <Button onClick={() => navigate("/todolist")} variant="contained">
           TodoList보기
         </Button>
-      </div>
+      </FormBox>
     );
   };
   const onLog = () => {
     return (
       <div>
-        <Button variant="contained" onClick={() => navigate("/auth")}>
+        <Button variant="contained" onClick={() => navigate("/auth/login")}>
           로그인
         </Button>
       </div>
     );
   };
-  return <div>{isLogin ? outLog() : onLog()}</div>;
+  return (
+    <FormBox>
+      <HomeText>Welcome, Todo App</HomeText>
+      <div>{isLogin ? outLog() : onLog()}</div>
+    </FormBox>
+  );
 };
 
 export default Home;

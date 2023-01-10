@@ -1,21 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import LoginForm from "../auth/LoginForm";
-import SignUpForm from "../auth/SignUpForm";
+import LoginForm from "../components/LoginForm";
+import { FormBox } from "../styles/pageStyles";
 
 const Login = () => {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
+    <FormBox>
       <LoginForm />
       <Link to="/auth/signup">회원가입</Link>
-    </div>
+    </FormBox>
   );
 };
 

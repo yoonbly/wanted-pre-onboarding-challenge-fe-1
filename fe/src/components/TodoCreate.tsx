@@ -10,7 +10,7 @@ import {
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { createTodo, getTodoById, updateTodo } from "../api/todosApi";
 
-interface ModalType {
+interface TodoCreateType {
   showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
   isEdit: boolean;
@@ -24,7 +24,7 @@ const Todocreate = ({
   showModal,
   setShowModal,
   setIsEdit,
-}: ModalType) => {
+}: TodoCreateType) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const data = {
@@ -41,8 +41,6 @@ const Todocreate = ({
     e.preventDefault();
     try {
       createTodo(data);
-      setTitle("");
-      setContent("");
       setIsEdit(false);
       setShowModal(false);
     } catch (err) {
@@ -53,8 +51,6 @@ const Todocreate = ({
     e.preventDefault();
     try {
       updateTodo(data, id);
-      setTitle("");
-      setContent("");
       setIsEdit(false);
       setShowModal(false);
     } catch (err) {
@@ -84,6 +80,7 @@ const Todocreate = ({
           autoComplete="off"
           onSubmit={isEdit ? onUpdateHandler : onCreateHandler}
         >
+          <h2>{isEdit ? "할일 수정하기" : "할일 추가하기"}</h2>
           <FormControl component="fieldset" variant="standard">
             <Grid container spacing={2}>
               <Grid item xs={12}>
