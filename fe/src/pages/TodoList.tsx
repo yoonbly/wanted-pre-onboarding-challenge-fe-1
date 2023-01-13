@@ -4,6 +4,7 @@ import Todocreate from "../components/TodoCreate";
 import { useNavigate } from "react-router-dom";
 import { deleteTodo, getTodo } from "../api/todosApi";
 import { FormBox, TodoBox, TodoListBox } from "../styles/pageStyles";
+import { useQuery, useMutation, useQueryClient } from "react-query";
 
 export interface Todos {
   content: string;
@@ -19,11 +20,14 @@ const TodoList = () => {
   const [todos, setTodos] = useState<Todos[]>([]);
   const [id, setId] = useState("");
   const navigate = useNavigate();
-  todos.map((i) => console.log(i.createdAt));
 
-  useEffect(() => {
-    getTodo().then((res) => setTodos(res.data.data));
-  }, [isEdit]);
+  const { data } = useQuery("todos", getTodo);
+  const queryClient = useQueryClient();
+  const deleteMutation = useMutation((id: string) => deleteTodo(id), {
+    onSuccess: () => {
+      queryClient.invalidateQueries("todos");
+    },
+  });
 
   const onEditHandler = (id: string) => {
     setShowModal(true);
@@ -36,8 +40,7 @@ const TodoList = () => {
   };
   const onDeleteHandler = (id: string) => {
     if (window.confirm("삭제하시겠습니까?")) {
-      setTodos((prev) => prev.filter((todo) => todo.id !== id));
-      deleteTodo(id);
+      deleteMutation.mutate(id);
     }
   };
 
@@ -63,7 +66,7 @@ const TodoList = () => {
         </Button>
       </FormBox>
       <TodoListBox>
-        {todos.map((item: Todos) => (
+        {data?.data.data.map((item: Todos) => (
           <TodoBox key={item.id}>
             {item.title}
             <div>

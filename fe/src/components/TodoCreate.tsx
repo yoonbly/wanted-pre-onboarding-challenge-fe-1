@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useMutation, useQueryClient } from "react-query";
 import { createTodo, getTodoById, updateTodo } from "../api/todosApi";
 import { Todos } from "../pages/TodoList";
 
@@ -20,6 +21,10 @@ interface TodoCreateType {
   setIsEdit: Dispatch<SetStateAction<boolean>>;
   setTodos: Dispatch<SetStateAction<Todos[]>>;
 }
+type Data = {
+  title: string;
+  content: string;
+};
 
 const Todocreate = ({
   id,
@@ -27,15 +32,23 @@ const Todocreate = ({
   showModal,
   setShowModal,
   setIsEdit,
-  setTodos,
-  todos,
 }: TodoCreateType) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const data = {
-    title,
-    content,
-  };
+  const data = { title, content };
+
+  const queryClient = useQueryClient();
+  const addMutation = useMutation((data: Data) => createTodo(data), {
+    onSuccess: () => {
+      queryClient.invalidateQueries("todos");
+    },
+  });
+  const editMutation = useMutation((data: Data) => updateTodo(data, id), {
+    onSuccess: () => {
+      queryClient.invalidateQueries("todos");
+    },
+  });
+
   const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   };
@@ -45,7 +58,7 @@ const Todocreate = ({
   const onCreateHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      createTodo(data).then((res) => setTodos([...todos, res.data.data]));
+      addMutation.mutate(data);
       setShowModal(false);
     } catch (err) {
       console.log(err);
@@ -54,13 +67,14 @@ const Todocreate = ({
   const onUpdateHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      updateTodo(data, id);
+      editMutation.mutate(data);
       setIsEdit(false);
       setShowModal(false);
     } catch (err) {
       console.log(err);
     }
   };
+
   useEffect(() => {
     getTodoById(id).then((res) => {
       if (isEdit) {
