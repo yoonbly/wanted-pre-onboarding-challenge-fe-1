@@ -9,13 +9,16 @@ import {
 
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { createTodo, getTodoById, updateTodo } from "../api/todosApi";
+import { Todos } from "../pages/TodoList";
 
 interface TodoCreateType {
+  id: string;
+  todos: Todos[];
+  isEdit: boolean;
   showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
-  isEdit: boolean;
   setIsEdit: Dispatch<SetStateAction<boolean>>;
-  id: string;
+  setTodos: Dispatch<SetStateAction<Todos[]>>;
 }
 
 const Todocreate = ({
@@ -24,6 +27,8 @@ const Todocreate = ({
   showModal,
   setShowModal,
   setIsEdit,
+  setTodos,
+  todos,
 }: TodoCreateType) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -40,8 +45,7 @@ const Todocreate = ({
   const onCreateHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      createTodo(data);
-      setIsEdit(false);
+      createTodo(data).then((res) => setTodos([...todos, res.data.data]));
       setShowModal(false);
     } catch (err) {
       console.log(err);
@@ -58,10 +62,10 @@ const Todocreate = ({
     }
   };
   useEffect(() => {
-    getTodoById(id).then((data) => {
+    getTodoById(id).then((res) => {
       if (isEdit) {
-        setTitle(data.data.title);
-        setContent(data.data.content);
+        setTitle(res.data.data.title);
+        setContent(res.data.data.content);
       }
     });
   }, [id]);
@@ -122,7 +126,6 @@ const Todocreate = ({
               size="large"
               onClick={() => {
                 setShowModal(false);
-                setIsEdit(false);
               }}
             >
               취소

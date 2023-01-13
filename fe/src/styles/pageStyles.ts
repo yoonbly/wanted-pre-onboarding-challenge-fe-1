@@ -6,16 +6,18 @@ const TodoBox = styled.div`
   align-items: center;
   width: 400px;
   border-bottom: 1px solid gray;
+  padding: 10px;
 `;
 
 const HomeText = styled.div`
   font-size: 30px;
   font-weight: bold;
-  margin-bottom: 30px;
+  margin-bottom: 50px;
   animation: slideInFromBottom 1s ease-in-out;
   @keyframes slideInFromBottom {
     0% {
       transform: translateY(100%);
+      opacity: 0;
     }
     100% {
       transform: translateY(0%);
@@ -32,4 +34,8 @@ const FormBox = styled.div`
   text-align: center;
 `;
 
-export { TodoBox, HomeText, FormBox };
+const TodoListBox = styled.div`
+  margin-top: 10px;
+`;
+
+export { TodoBox, HomeText, FormBox, TodoListBox };
