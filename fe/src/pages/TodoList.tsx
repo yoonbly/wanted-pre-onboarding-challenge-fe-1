@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Todocreate from "../components/TodoCreate";
 import { useNavigate } from "react-router-dom";
 import { deleteTodo, getTodo } from "../api/todosApi";
@@ -17,17 +17,19 @@ export interface Todos {
 const TodoList = () => {
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [todos, setTodos] = useState<Todos[]>([]);
   const [id, setId] = useState("");
   const navigate = useNavigate();
 
-  const { data } = useQuery("todos", getTodo);
+  const { data: todos } = useQuery("todos", getTodo);
   const queryClient = useQueryClient();
-  const deleteMutation = useMutation((id: string) => deleteTodo(id), {
-    onSuccess: () => {
-      queryClient.invalidateQueries("todos");
-    },
-  });
+  const { mutate: deleteMutation } = useMutation(
+    (id: string) => deleteTodo(id),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("todos");
+      },
+    }
+  );
 
   const onEditHandler = (id: string) => {
     setShowModal(true);
@@ -40,7 +42,7 @@ const TodoList = () => {
   };
   const onDeleteHandler = (id: string) => {
     if (window.confirm("삭제하시겠습니까?")) {
-      deleteMutation.mutate(id);
+      deleteMutation(id);
     }
   };
 
@@ -50,11 +52,9 @@ const TodoList = () => {
         <Todocreate
           id={id}
           isEdit={isEdit}
-          todos={todos}
           showModal={showModal}
           setShowModal={setShowModal}
           setIsEdit={setIsEdit}
-          setTodos={setTodos}
         />
       )}
       <FormBox>
@@ -66,7 +66,7 @@ const TodoList = () => {
         </Button>
       </FormBox>
       <TodoListBox>
-        {data?.data.data.map((item: Todos) => (
+        {todos?.map((item: Todos) => (
           <TodoBox key={item.id}>
             {item.title}
             <div>

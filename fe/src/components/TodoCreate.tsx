@@ -7,21 +7,25 @@ import {
   TextField,
 } from "@mui/material";
 
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { createTodo, getTodoById, updateTodo } from "../api/todosApi";
-import { Todos } from "../pages/TodoList";
 
 interface TodoCreateType {
   id: string;
-  todos: Todos[];
   isEdit: boolean;
   showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
   setIsEdit: Dispatch<SetStateAction<boolean>>;
-  setTodos: Dispatch<SetStateAction<Todos[]>>;
 }
-type Data = {
+
+type Todo = {
   title: string;
   content: string;
 };
@@ -33,57 +37,53 @@ const Todocreate = ({
   setShowModal,
   setIsEdit,
 }: TodoCreateType) => {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const data = { title, content };
+  const [inputs, setInputs] = useState({
+    title: "",
+    content: "",
+  });
+  const todoInput = useRef(null);
+  const { title, content } = inputs;
+  const newTodo = { title, content };
 
   const queryClient = useQueryClient();
-  const addMutation = useMutation((data: Data) => createTodo(data), {
+  const addMutation = useMutation((newTodo: Todo) => createTodo(newTodo), {
     onSuccess: () => {
       queryClient.invalidateQueries("todos");
     },
   });
-  const editMutation = useMutation((data: Data) => updateTodo(data, id), {
+  const editMutation = useMutation((newTodo: Todo) => updateTodo(newTodo, id), {
     onSuccess: () => {
       queryClient.invalidateQueries("todos");
     },
   });
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, name } = e.target;
+    setInputs({
+      ...inputs,
+      [name]: value,
+    });
+  };
 
-  const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
+  const onCreateHandler = async () => {
+    addMutation.mutate(newTodo);
+    setShowModal(false);
   };
-  const onChangeContent = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setContent(e.target.value);
-  };
-  const onCreateHandler = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      addMutation.mutate(data);
-      setShowModal(false);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  const onUpdateHandler = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      editMutation.mutate(data);
-      setIsEdit(false);
-      setShowModal(false);
-    } catch (err) {
-      console.log(err);
-    }
+  const onUpdateHandler = async () => {
+    editMutation.mutate(newTodo);
+    setIsEdit(false);
+    setShowModal(false);
   };
 
   useEffect(() => {
-    getTodoById(id).then((res) => {
+    // react query로 바꾸기
+    getTodoById(id).then((todo) => {
       if (isEdit) {
-        setTitle(res.data.data.title);
-        setContent(res.data.data.content);
+        setInputs({ title: todo.title, content: todo.content });
       }
     });
-  }, [id]);
+  }, []);
   return (
+    // MUI 속성이 좀 더러운데.. 바꿀방법을 찾아보기
     <div>
       <Modal
         open={showModal}
@@ -107,9 +107,11 @@ const Todocreate = ({
                   label="제목"
                   variant="standard"
                   type="text"
+                  name="title"
                   value={title}
                   fullWidth
-                  onChange={onChangeTitle}
+                  ref={todoInput}
+                  onChange={onChange}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -119,9 +121,11 @@ const Todocreate = ({
                   multiline
                   rows={4}
                   type="text"
+                  name="content"
                   value={content}
                   fullWidth
-                  onChange={onChangeContent}
+                  ref={todoInput}
+                  onChange={onChange}
                 />
               </Grid>
             </Grid>

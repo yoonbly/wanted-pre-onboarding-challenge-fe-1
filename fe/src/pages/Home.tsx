@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FormBox, HomeText } from "../styles/pageStyles";
 
 const Home = () => {
+  // 전역상태로 관리해주기
   const [isLogin, setIsLogin] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
@@ -17,7 +18,6 @@ const Home = () => {
       localStorage.clear();
       alert("로그아웃 되었습니다.");
       setIsLogin(false);
-      navigate("/");
     };
     return (
       <FormBox>
