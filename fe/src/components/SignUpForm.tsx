@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import FormControl from "@mui/material/FormControl";
 import Grid from "@mui/material/Grid";
 import { Button } from "@mui/material";
 import { userCreate } from "../api/authApi";
+import { useNavigate } from "react-router-dom";
 
 const SignUpForm = () => {
   const [inputs, setInputs] = useState({
@@ -17,7 +18,7 @@ const SignUpForm = () => {
     isPassword: false,
     isPwConfirm: false,
   });
-
+  const navigate = useNavigate();
   const { email, password, pwconfirm } = inputs;
   const user = { email, password };
 
@@ -45,6 +46,7 @@ const SignUpForm = () => {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     userCreate(user);
+    navigate("/auth/login");
   };
 
   return (

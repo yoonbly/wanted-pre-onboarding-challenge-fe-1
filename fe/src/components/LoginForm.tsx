@@ -1,6 +1,9 @@
 import { Box, Button, FormControl, Grid, TextField } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { userLogin } from "../api/authApi";
+import { loginAccout } from "../redux/userSlice";
+import { useAppDispatch } from "../redux/hooks";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const [inputs, setInputs] = useState({
@@ -11,6 +14,8 @@ const LoginForm = () => {
     isEmail: false,
     isPassword: false,
   });
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const { email, password } = inputs;
   const user = { email, password };
@@ -25,6 +30,7 @@ const LoginForm = () => {
       isEmail: validation.emailValid.test(email),
       isPassword: validation.passwordValid.test(password),
     });
+    console.log("render");
   }, [inputs]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,6 +43,8 @@ const LoginForm = () => {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     userLogin(user);
+    dispatch(loginAccout(user));
+    navigate("/");
   };
   return (
     <div>

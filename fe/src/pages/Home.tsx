@@ -1,23 +1,20 @@
 import { Button } from "@mui/material";
-import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FormBox, HomeText } from "../styles/pageStyles";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { logoutAccout } from "../redux/userSlice";
 
 const Home = () => {
-  // 전역상태로 관리해주기
-  const [isLogin, setIsLogin] = useState(false);
+  const isLogin = useAppSelector((state) => state.user.isLogin);
+  const name = useAppSelector((state) => state.user.email);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  useEffect(() => {
-    if (localStorage.getItem("token")) {
-      setIsLogin(true);
-    }
-  }, []);
 
   const outLog = () => {
     const clearStorage = () => {
       localStorage.clear();
       alert("로그아웃 되었습니다.");
-      setIsLogin(false);
+      dispatch(logoutAccout());
     };
     return (
       <FormBox>
@@ -41,7 +38,7 @@ const Home = () => {
   };
   return (
     <FormBox>
-      <HomeText>Welcome, Todo App</HomeText>
+      <HomeText>{isLogin ? `Welcome, ${name}` : "Welcome, Todo App"}</HomeText>
       <div>{isLogin ? outLog() : onLog()}</div>
     </FormBox>
   );
