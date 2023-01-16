@@ -17,8 +17,8 @@
   - Todo 추가 및 수정 기능(모달창으로 구현) => 🔨 React query mutation을 이용해 처리
   - 삭제 즉시 반영 => 🔨 confirm창으로 확인 후 삭제
 
-### 3. 시연 영상(1차)
-<img src="https://user-images.githubusercontent.com/81467705/211180116-89e976ea-a3ab-412a-ba16-8c310ee2e848.gif" width="700" height="600">
+### 3. 시연 영상
+<img src="https://user-images.githubusercontent.com/81467705/212646462-740520f8-430b-432d-bd88-be6fe251aefe.gif" width="700" height="550">
 
 ### 4. 실행 방법
 서버
