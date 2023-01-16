@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import FormControl from "@mui/material/FormControl";
@@ -7,46 +7,44 @@ import { Button } from "@mui/material";
 import { userCreate } from "../api/authApi";
 
 const SignUpForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [pwconfirm, setPwConfirm] = useState("");
-  const data = {
-    email,
-    password,
-  };
-  const [emailVali, setEmailVali] = useState(false);
-  const [passwordVali, setPasswordVali] = useState(false);
-  const [pwconfirmVali, setPwconfirmVali] = useState(false);
+  const [inputs, setInputs] = useState({
+    email: "",
+    password: "",
+    pwconfirm: "",
+  });
+  const [isValid, setIsValid] = useState({
+    isEmail: false,
+    isPassword: false,
+    isPwConfirm: false,
+  });
+
+  const { email, password, pwconfirm } = inputs;
+  const user = { email, password };
+
   const validation = {
-    email: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g,
-    password: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}/g,
+    emailValid: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g,
+    passwordValid: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}/g,
   };
 
-  const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const currentEmail = e.target.value;
-    if (!currentEmail || validation.email.test(currentEmail)) {
-      setEmailVali(true);
-    }
-    setEmail(currentEmail);
-  };
-  const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const currentpassword = e.target.value;
-    if (!currentpassword || validation.password.test(currentpassword)) {
-      setPasswordVali(true);
-    }
-    setPassword(currentpassword);
-  };
-  const onChangePwConfirm = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const confirmpassword = e.target.value;
-    if (password == confirmpassword) {
-      setPwconfirmVali(true);
-    }
-    setPwConfirm(confirmpassword);
+  useEffect(() => {
+    setIsValid({
+      isEmail: validation.emailValid.test(email),
+      isPassword: validation.passwordValid.test(password),
+      isPwConfirm: password === pwconfirm,
+    });
+  }, [inputs]);
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, name } = e.target;
+    setInputs({
+      ...inputs,
+      [name]: value,
+    });
   };
 
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    userCreate(data);
+    userCreate(user);
   };
 
   return (
@@ -65,29 +63,31 @@ const SignUpForm = () => {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
-                id="outlined-basic"
                 label="이메일"
                 variant="outlined"
                 type="email"
+                name="email"
                 value={email}
-                onChange={onChangeEmail}
-                error={!emailVali && email.length ? true : false}
+                onChange={onChange}
+                error={!isValid.isEmail && email.length ? true : false}
                 helperText={
-                  !emailVali && email.length ? "이메일 형식이 아닙니다." : ""
+                  !isValid.isEmail && email.length
+                    ? "이메일 형식이 아닙니다."
+                    : ""
                 }
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
-                id="outlined-basic"
                 label="비밀번호"
                 variant="outlined"
                 type="password"
+                name="password"
                 value={password}
-                onChange={onChangePassword}
-                error={!passwordVali && password.length ? true : false}
+                onChange={onChange}
+                error={!isValid.isPassword && password.length ? true : false}
                 helperText={
-                  !passwordVali && password.length
+                  !isValid.isPassword && password.length
                     ? "비밀번호는 숫자, 영문자를 포함한 8글자 이상이어야 합니다."
                     : ""
                 }
@@ -95,15 +95,15 @@ const SignUpForm = () => {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                id="outlined-basic"
                 label="비밀번호 확인"
                 variant="outlined"
                 type="password"
+                name="pwconfirm"
                 value={pwconfirm}
-                onChange={onChangePwConfirm}
-                error={!pwconfirmVali && pwconfirm.length ? true : false}
+                onChange={onChange}
+                error={!isValid.isPwConfirm && pwconfirm.length ? true : false}
                 helperText={
-                  !pwconfirmVali && pwconfirm.length
+                  !isValid.isPwConfirm && pwconfirm.length
                     ? "비밀번호가 일치하지 않습니다."
                     : ""
                 }
@@ -116,7 +116,11 @@ const SignUpForm = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
             size="large"
-            disabled={passwordVali && pwconfirmVali && emailVali ? false : true}
+            disabled={
+              isValid.isEmail && isValid.isPassword && isValid.isPwConfirm
+                ? false
+                : true
+            }
           >
             회원가입
           </Button>

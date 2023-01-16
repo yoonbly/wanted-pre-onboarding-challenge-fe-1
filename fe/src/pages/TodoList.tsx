@@ -5,14 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { deleteTodo, getTodo } from "../api/todosApi";
 import { FormBox, TodoBox, TodoListBox } from "../styles/pageStyles";
 import { useQuery, useMutation, useQueryClient } from "react-query";
-
-export interface Todos {
-  content: string;
-  title: string;
-  id: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Todos } from "../types/todoType";
 
 const TodoList = () => {
   const [showModal, setShowModal] = useState(false);

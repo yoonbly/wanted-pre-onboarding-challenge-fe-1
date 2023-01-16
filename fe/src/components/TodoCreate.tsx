@@ -6,29 +6,10 @@ import {
   Modal,
   TextField,
 } from "@mui/material";
-
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { createTodo, getTodoById, updateTodo } from "../api/todosApi";
-
-interface TodoCreateType {
-  id: string;
-  isEdit: boolean;
-  showModal: boolean;
-  setShowModal: Dispatch<SetStateAction<boolean>>;
-  setIsEdit: Dispatch<SetStateAction<boolean>>;
-}
-
-type Todo = {
-  title: string;
-  content: string;
-};
+import { Todo, TodoCreateType } from "../types/todoType";
 
 const Todocreate = ({
   id,
@@ -41,7 +22,6 @@ const Todocreate = ({
     title: "",
     content: "",
   });
-  const todoInput = useRef(null);
   const { title, content } = inputs;
   const newTodo = { title, content };
 
@@ -83,7 +63,6 @@ const Todocreate = ({
     });
   }, []);
   return (
-    // MUI 속성이 좀 더러운데.. 바꿀방법을 찾아보기
     <div>
       <Modal
         open={showModal}
@@ -103,20 +82,17 @@ const Todocreate = ({
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
-                  id="standard-basic"
                   label="제목"
                   variant="standard"
                   type="text"
                   name="title"
                   value={title}
                   fullWidth
-                  ref={todoInput}
                   onChange={onChange}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  id="outlined-multiline-static"
                   label="내용"
                   multiline
                   rows={4}
@@ -124,7 +100,6 @@ const Todocreate = ({
                   name="content"
                   value={content}
                   fullWidth
-                  ref={todoInput}
                   onChange={onChange}
                 />
               </Grid>

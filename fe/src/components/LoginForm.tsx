@@ -1,37 +1,42 @@
 import { Box, Button, FormControl, Grid, TextField } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { userLogin } from "../api/authApi";
 
 const LoginForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [emailVali, setEmailVali] = useState(false);
-  const [passwordVali, setPasswordVali] = useState(false);
-  const data = {
-    email,
-    password,
-  };
+  const [inputs, setInputs] = useState({
+    email: "",
+    password: "",
+  });
+  const [isValid, setIsValid] = useState({
+    isEmail: false,
+    isPassword: false,
+  });
+
+  const { email, password } = inputs;
+  const user = { email, password };
+
   const validation = {
-    email: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g,
-    password: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}/g,
+    emailValid: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g,
+    passwordValid: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}/g,
   };
-  const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const currentEmail = e.target.value;
-    if (!currentEmail || validation.email.test(currentEmail)) {
-      setEmailVali(true);
-    }
-    setEmail(currentEmail);
-  };
-  const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const currentpassword = e.target.value;
-    if (!currentpassword || validation.password.test(currentpassword)) {
-      setPasswordVali(true);
-    }
-    setPassword(currentpassword);
+
+  useEffect(() => {
+    setIsValid({
+      isEmail: validation.emailValid.test(email),
+      isPassword: validation.passwordValid.test(password),
+    });
+  }, [inputs]);
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, name } = e.target;
+    setInputs({
+      ...inputs,
+      [name]: value,
+    });
   };
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    userLogin(data);
+    userLogin(user);
   };
   return (
     <div>
@@ -49,29 +54,31 @@ const LoginForm = () => {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
-                id="outlined-basic"
                 label="이메일"
                 variant="outlined"
                 type="email"
+                name="email"
                 value={email}
-                onChange={onChangeEmail}
-                error={!emailVali && email.length ? true : false}
+                onChange={onChange}
+                error={!isValid.isEmail && email.length ? true : false}
                 helperText={
-                  !emailVali && email.length ? "이메일 형식이 아닙니다." : ""
+                  !isValid.isEmail && email.length
+                    ? "이메일 형식이 아닙니다."
+                    : ""
                 }
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
-                id="outlined-basic"
                 label="비밀번호"
                 variant="outlined"
+                name="password"
                 type="password"
                 value={password}
-                onChange={onChangePassword}
-                error={!passwordVali && password.length ? true : false}
+                onChange={onChange}
+                error={!isValid.isPassword && password.length ? true : false}
                 helperText={
-                  !passwordVali && password.length
+                  !isValid.isPassword && password.length
                     ? "비밀번호는 숫자, 영문자를 포함한 8글자 이상이어야 합니다."
                     : ""
                 }
@@ -84,7 +91,7 @@ const LoginForm = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
             size="large"
-            disabled={passwordVali && emailVali ? false : true}
+            disabled={isValid.isEmail && isValid.isPassword ? false : true}
           >
             로그인
           </Button>
