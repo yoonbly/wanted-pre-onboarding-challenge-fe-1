@@ -19,7 +19,7 @@ const Home = () => {
             size="large"
             variant="contained"
           >
-            TodoList보기
+            TodoList 보기
           </Button>
         ) : (
           <Button

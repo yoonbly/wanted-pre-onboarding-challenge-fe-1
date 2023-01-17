@@ -2,7 +2,7 @@ import { Box, Button, FormControl, Grid, TextField } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { userLogin } from "../api/authApi";
 import { useAppDispatch } from "../redux/hooks";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { loginAccout } from "../redux/userSlice";
 
 const LoginForm = () => {
@@ -15,7 +15,6 @@ const LoginForm = () => {
     isPassword: false,
   });
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
 
   const { email, password } = inputs;
   const user = { email, password };
