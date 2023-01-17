@@ -18,7 +18,7 @@ const SignUpForm = () => {
     isPassword: false,
     isPwConfirm: false,
   });
-  const navigate = useNavigate();
+
   const { email, password, pwconfirm } = inputs;
   const user = { email, password };
 
@@ -46,7 +46,6 @@ const SignUpForm = () => {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     userCreate(user);
-    navigate("/auth/login");
   };
 
   return (
@@ -67,6 +66,7 @@ const SignUpForm = () => {
               <TextField
                 label="이메일"
                 variant="outlined"
+                fullWidth
                 type="email"
                 name="email"
                 value={email}
@@ -83,6 +83,7 @@ const SignUpForm = () => {
               <TextField
                 label="비밀번호"
                 variant="outlined"
+                fullWidth
                 type="password"
                 name="password"
                 value={password}
@@ -99,6 +100,7 @@ const SignUpForm = () => {
               <TextField
                 label="비밀번호 확인"
                 variant="outlined"
+                fullWidth
                 type="password"
                 name="pwconfirm"
                 value={pwconfirm}

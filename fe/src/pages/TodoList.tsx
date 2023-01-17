@@ -1,9 +1,8 @@
 import { Button } from "@mui/material";
 import React, { useState } from "react";
 import Todocreate from "../components/TodoCreate";
-import { useNavigate } from "react-router-dom";
 import { deleteTodo, getTodo } from "../api/todosApi";
-import { FormBox, TodoBox, TodoListBox } from "../styles/pageStyles";
+import styled from "@emotion/styled";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { Todos } from "../types/todoType";
 import { useAppDispatch } from "../redux/hooks";
@@ -11,7 +10,6 @@ import { addMode, editMode, setId } from "../redux/todoSlice";
 
 const TodoList = () => {
   const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
 
@@ -45,40 +43,52 @@ const TodoList = () => {
   };
 
   return (
-    <div>
+    <TodoContainer>
       {showModal && (
         <Todocreate showModal={showModal} setShowModal={setShowModal} />
       )}
-      <FormBox>
-        <Button variant="outlined" onClick={() => navigate("/")}>
-          홈으로 가기
-        </Button>
-        <Button variant="contained" onClick={onAddHandler}>
-          할일 추가하기
-        </Button>
-      </FormBox>
-      <TodoListBox>
-        {todos &&
-          todos.map((item: Todos) => (
-            <TodoBox key={item.id}>
-              {item.title}
-              <div>
-                <Button type="button" onClick={() => onEditHandler(item.id)}>
-                  수정
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => onDeleteHandler(item.id)}
-                  color="error"
-                >
-                  삭제
-                </Button>
-              </div>
-            </TodoBox>
-          ))}
-      </TodoListBox>
-    </div>
+      <Button variant="contained" size="large" onClick={onAddHandler}>
+        할일 추가하기
+      </Button>
+      {todos &&
+        todos.map((item: Todos) => (
+          <TodoBox key={item.id}>
+            {item.title}
+            <div>
+              <Button type="button" onClick={() => onEditHandler(item.id)}>
+                수정
+              </Button>
+              <Button
+                type="button"
+                onClick={() => onDeleteHandler(item.id)}
+                color="error"
+              >
+                삭제
+              </Button>
+            </div>
+          </TodoBox>
+        ))}
+    </TodoContainer>
   );
 };
 
 export default TodoList;
+
+const TodoContainer = styled.div`
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+`;
+
+const TodoBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 80%;
+  border-bottom: 1px solid gray;
+  padding: 10px;
+  margin-top: 10px;
+`;

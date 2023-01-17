@@ -1,8 +1,9 @@
 import { Box, Button, FormControl, Grid, TextField } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { userLogin } from "../api/authApi";
-import { loginAccout } from "../redux/userSlice";
 import { useAppDispatch } from "../redux/hooks";
+import { Link, useNavigate } from "react-router-dom";
+import { loginAccout } from "../redux/userSlice";
 
 const LoginForm = () => {
   const [inputs, setInputs] = useState({
@@ -13,8 +14,8 @@ const LoginForm = () => {
     isEmail: false,
     isPassword: false,
   });
-
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const { email, password } = inputs;
   const user = { email, password };
@@ -41,8 +42,7 @@ const LoginForm = () => {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     userLogin(user);
-    localStorage.setItem("email", user.email);
-    dispatch(loginAccout(user));
+    localStorage.getItem("token") && dispatch(loginAccout());
   };
   return (
     <div>
@@ -62,6 +62,7 @@ const LoginForm = () => {
               <TextField
                 label="이메일"
                 variant="outlined"
+                fullWidth
                 type="email"
                 name="email"
                 value={email}
@@ -78,6 +79,7 @@ const LoginForm = () => {
               <TextField
                 label="비밀번호"
                 variant="outlined"
+                fullWidth
                 name="password"
                 type="password"
                 value={password}
@@ -103,6 +105,8 @@ const LoginForm = () => {
           </Button>
         </FormControl>
       </Box>
+      <div>🤔 아직 회원이 아니라면?</div>
+      <Link to="/auth/signup"> {`회원가입 하러 가기`}</Link>
     </div>
   );
 };
