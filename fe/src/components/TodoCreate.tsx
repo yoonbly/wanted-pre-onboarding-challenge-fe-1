@@ -9,8 +9,7 @@ import {
 import React, { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { createTodo, getTodoById, updateTodo } from "../api/todosApi";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { addMode } from "../redux/todoSlice";
+import { useAppSelector } from "../redux/hooks";
 import { Todo, TodoCreateType } from "../types/todoType";
 
 const Todocreate = ({ showModal, setShowModal }: TodoCreateType) => {
