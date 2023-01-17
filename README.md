@@ -3,22 +3,25 @@
 `로그인, 회원가입이 가능한 TodoApp`
 ### 1. 사용 언어 및 라이브러리
 <img src="https://img.shields.io/badge/React-61DAFB?style=flat&logo=React&logoColor=black">  <img src="https://img.shields.io/badge/Typescript-3178C6?style=flat&logo=Typescript&logoColor=black">  <img src="https://img.shields.io/badge/MUI-007FFF?style=flat&logo=MUI&logoColor=black">   
+<img src="https://img.shields.io/badge/Redux-764ABC?style=flat&logo=Redux&logoColor=black">   <img src="https://img.shields.io/badge/ReactQuery-FF4154?style=flat&logo=ReactQuery&logoColor=black">   
 
-### 2. 기능 설명 => 🔨1차 리팩토링
+### 2. 기능 설명 => 🔨1차 리팩토링 => ⚒️ 2차 리팩토링
 - 로그인
   - 이메일 및 비밀번호 유효성 확인하여 메시지 출력
-  - 로그인 성공 시 홈화면으로 이동
+  - 로그인 성공 시 홈화면으로 이동  => ⚒️ redux-toolkit으로 로그인 상태 관리 : Header, Home에서 사용
   - 로그인 실패 시 alert창으로 에러메세지 출력 => 🔨 axios error type 변경
 - 회원가입
   - 이메일 및 비밀번호, 비밀번호 확인 유효성 확인하여 메시지 출력
   - 이미 가입된 유저일 경우 alert창으로 메시지 출력 => 🔨 axios error type 변경
 - TodoList
-  - TodoList조회 => 🔨 React query를 이용해 서버상태관리
-  - Todo 추가 및 수정 기능(모달창으로 구현) => 🔨 React query mutation을 이용해 처리
+  - TodoList조회 => 🔨 React query를 이용해 서버상태관리 
+  - Todo 추가 및 수정 기능(모달창으로 구현) => 🔨 React query mutation을 이용해 처리 => ⚒️ redux-toolkit으로 추가 및 수정, id값 관리
   - 삭제 즉시 반영 => 🔨 confirm창으로 확인 후 삭제
-
+- ⚒️ UI
+  - Header, Footer, Main Layout 구현
+  - 모바일 우선, 반응형 구현
 ### 3. 시연 영상
-<img src="https://user-images.githubusercontent.com/81467705/212646462-740520f8-430b-432d-bd88-be6fe251aefe.gif" width="700" height="550">
+<img src="https://user-images.githubusercontent.com/81467705/212958051-11385eb5-46d5-47c1-ace4-fe85f14fcb2d.gif">
 
 ### 4. 실행 방법
 서버
@@ -29,7 +32,8 @@
 프론트
 ```
 1. 디렉토리 이동 fe
-2. npm start
+2. npm i 
+3. npm start
 ```
 ## 🔨1차 리팩토링
 1. axios error type 변경   
@@ -115,6 +119,64 @@ dependency array안에 reference type을 넣어줄 경우, 값이 같더라도 �
 ```
 3. 삭제 클릭 시 한번 확인받기
 `why`강의 때 삭제나 무언가를 파괴하는 행위는 한번 더 확인을 거쳐야한다고 하셔서, 삭제 버튼 클릭 시 confirm창으로 한번 확인 후 삭제 처리하도록 했다.
+## ⚒️2차 리팩토링
+1. redux-toolkit으로 로그인 상태 관리   
+`why?`redux-toolkit을 처음 배우는터라, 연습 삼아 작성해보았다.   
+사실 localStorage에서 토큰을 받아와 확인해도 되는 부분인데, 굳이 구현할 필요가 있을까..? 싶은 생각이 들었다.  
+코드 보기 : [05b140f](https://github.com/starkoora/wanted-pre-onboarding-challenge-fe-1-api/commit/05b140f6f6d5c464310c0932e107a97a0e2aa909)
+2. redux-toolkit으로 추가 및 수정, id값 관리   
+`why?`추가, 수정 모드와 id값은 TodoList컴포넌트에서 TodoCreate컴포넌트 props로 내려주고 있는 부분인데, 두 컴포넌트 모두 사용하고 있어서 전역상태관리가 필요했다.   
+- 코드
+```
+import { configureStore } from "@reduxjs/toolkit";
+import userReducer from "./userSlice";
+import todosReducer from "./todoSlice";
 
+const store = configureStore({
+  reducer: {
+    user: userReducer,
+    todos: todosReducer,
+  },
+});
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+export default store;
+
+```
+```
+import { createSlice } from "@reduxjs/toolkit";
+
+const initialState = {
+  id: "",
+  isEdit: false,
+};
+
+const todoSlice = createSlice({
+  name: "todos",
+  initialState,
+  reducers: {
+    editMode(state) {
+      state.isEdit = true;
+    },
+    addMode(state) {
+      state.isEdit = false;
+    },
+    setId(state, action) {
+      state.id = action.payload;
+    },
+  },
+});
+
+export const { editMode, addMode, setId } = todoSlice.actions;
+export default todoSlice.reducer;
+```
+3. UI 구현   
+`why?`기능구현에만 초점을 둬서 UI의 완성도가 떨어졌었다.   
+우선 헤더, 푸터, 메인으로 감싸주는 레이아웃을 설정해주었다.
+내용이 많지 않아 모바일에 적합하다고 생각했기에, 모바일 우선으로 디자인을 했고 반응형으로 구현했다.   
+코드 보기 : [a7ca9ec](https://github.com/starkoora/wanted-pre-onboarding-challenge-fe-1-api/commit/a7ca9ec5d7b79fd7b4a912ba35278dce055bd888)
+## ✍️개발 일지
+👉[개발 일지 보러가기](https://surgedev.notion.site/1-940b36989e8f411fa57c09f6cb69479b)
 ## 👩‍💻작성자 소개
 👉[포트폴리오 보러가기](https://www.notion.so/surgedev/b37ace1e2bab4d328e1ab9bbba944c34)
