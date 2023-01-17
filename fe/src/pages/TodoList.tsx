@@ -50,7 +50,7 @@ const TodoList = () => {
       <Button variant="contained" size="large" onClick={onAddHandler}>
         할일 추가하기
       </Button>
-      {todos &&
+      {todos && todos.length !== 0 ? (
         todos.map((item: Todos) => (
           <TodoBox key={item.id}>
             {item.title}
@@ -67,7 +67,10 @@ const TodoList = () => {
               </Button>
             </div>
           </TodoBox>
-        ))}
+        ))
+      ) : (
+        <EmptyTodo>아직 할일이 없어요🥱</EmptyTodo>
+      )}
     </TodoContainer>
   );
 };
@@ -91,4 +94,14 @@ const TodoBox = styled.div`
   border-bottom: 1px solid gray;
   padding: 10px;
   margin-top: 10px;
+`;
+
+const EmptyTodo = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 70%;
+  font-size: 1.5rem;
 `;

@@ -30,16 +30,22 @@ const Todocreate = ({ showModal, setShowModal }: TodoCreateType) => {
   });
 
   const queryClient = useQueryClient();
-  const addMutation = useMutation((newTodo: Todo) => createTodo(newTodo), {
-    onSuccess: () => {
-      queryClient.invalidateQueries("todos");
-    },
-  });
-  const editMutation = useMutation((newTodo: Todo) => updateTodo(newTodo, id), {
-    onSuccess: () => {
-      queryClient.invalidateQueries("todos");
-    },
-  });
+  const { mutate: addMutation } = useMutation(
+    (newTodo: Todo) => createTodo(newTodo),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("todos");
+      },
+    }
+  );
+  const { mutate: editMutation } = useMutation(
+    (newTodo: Todo) => updateTodo(newTodo, id),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("todos");
+      },
+    }
+  );
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -50,23 +56,18 @@ const Todocreate = ({ showModal, setShowModal }: TodoCreateType) => {
   };
 
   const onCreateHandler = async () => {
-    addMutation.mutate(newTodo);
+    addMutation(newTodo);
     setShowModal(false);
   };
 
   const onUpdateHandler = async () => {
-    editMutation.mutate(newTodo);
+    editMutation(newTodo);
     setShowModal(false);
   };
 
   return (
     <div>
-      <Modal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
+      <Modal open={showModal} onClose={() => setShowModal(false)}>
         <Box
           component="form"
           sx={style}
@@ -103,7 +104,6 @@ const Todocreate = ({ showModal, setShowModal }: TodoCreateType) => {
             </Grid>
             <Button
               type="submit"
-              fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
               size="large"
@@ -112,7 +112,7 @@ const Todocreate = ({ showModal, setShowModal }: TodoCreateType) => {
             </Button>
             <Button
               type="button"
-              fullWidth
+              variant="outlined"
               size="large"
               onClick={() => {
                 setShowModal(false);

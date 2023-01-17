@@ -1,6 +1,4 @@
 import styled from "@emotion/styled";
-import { Button } from "@mui/material";
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { logoutAccout } from "../redux/userSlice";
