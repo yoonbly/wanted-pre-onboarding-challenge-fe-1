@@ -1,11 +1,8 @@
 import { Dispatch, SetStateAction } from "react";
 
 interface TodoCreateType {
-  id: string;
-  isEdit: boolean;
   showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
-  setIsEdit: Dispatch<SetStateAction<boolean>>;
 }
 
 type Todo = {

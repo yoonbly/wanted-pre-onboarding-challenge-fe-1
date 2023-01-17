@@ -6,24 +6,29 @@ import {
   Modal,
   TextField,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
+import React, { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { createTodo, getTodoById, updateTodo } from "../api/todosApi";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { addMode } from "../redux/todoSlice";
 import { Todo, TodoCreateType } from "../types/todoType";
 
-const Todocreate = ({
-  id,
-  isEdit,
-  showModal,
-  setShowModal,
-  setIsEdit,
-}: TodoCreateType) => {
+const Todocreate = ({ showModal, setShowModal }: TodoCreateType) => {
   const [inputs, setInputs] = useState({
     title: "",
     content: "",
   });
   const { title, content } = inputs;
   const newTodo = { title, content };
+
+  const isEdit = useAppSelector((state) => state.todos.isEdit);
+  const id = useAppSelector((state) => state.todos.id);
+
+  useQuery(["todo", id], () => getTodoById(id), {
+    enabled: !!isEdit,
+    onSuccess: (todo) =>
+      setInputs({ title: todo.title, content: todo.content }),
+  });
 
   const queryClient = useQueryClient();
   const addMutation = useMutation((newTodo: Todo) => createTodo(newTodo), {
@@ -36,6 +41,7 @@ const Todocreate = ({
       queryClient.invalidateQueries("todos");
     },
   });
+
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
     setInputs({
@@ -48,20 +54,12 @@ const Todocreate = ({
     addMutation.mutate(newTodo);
     setShowModal(false);
   };
+
   const onUpdateHandler = async () => {
     editMutation.mutate(newTodo);
-    setIsEdit(false);
     setShowModal(false);
   };
 
-  useEffect(() => {
-    // react query로 바꾸기
-    getTodoById(id).then((todo) => {
-      if (isEdit) {
-        setInputs({ title: todo.title, content: todo.content });
-      }
-    });
-  }, []);
   return (
     <div>
       <Modal

@@ -6,7 +6,7 @@ import { logoutAccout } from "../redux/userSlice";
 
 const Home = () => {
   const isLogin = useAppSelector((state) => state.user.isLogin);
-  const name = useAppSelector((state) => state.user.email);
+  const userEmail = useAppSelector((state) => state.user.email);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -38,7 +38,9 @@ const Home = () => {
   };
   return (
     <FormBox>
-      <HomeText>{isLogin ? `Welcome, ${name}` : "Welcome, Todo App"}</HomeText>
+      <HomeText>
+        {isLogin ? `Welcome, ${userEmail}` : `Welcome, Todo App`}
+      </HomeText>
       <div>{isLogin ? outLog() : onLog()}</div>
     </FormBox>
   );

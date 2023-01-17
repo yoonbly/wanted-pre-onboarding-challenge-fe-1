@@ -6,15 +6,18 @@ import { deleteTodo, getTodo } from "../api/todosApi";
 import { FormBox, TodoBox, TodoListBox } from "../styles/pageStyles";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { Todos } from "../types/todoType";
+import { useAppDispatch } from "../redux/hooks";
+import { addMode, editMode, setId } from "../redux/todoSlice";
 
 const TodoList = () => {
   const [showModal, setShowModal] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [id, setId] = useState("");
   const navigate = useNavigate();
 
-  const { data: todos } = useQuery("todos", getTodo);
+  const dispatch = useAppDispatch();
+
   const queryClient = useQueryClient();
+  const { data: todos } = useQuery("todos", () => getTodo());
+
   const { mutate: deleteMutation } = useMutation(
     (id: string) => deleteTodo(id),
     {
@@ -26,13 +29,15 @@ const TodoList = () => {
 
   const onEditHandler = (id: string) => {
     setShowModal(true);
-    setIsEdit(true);
-    setId(id);
+    dispatch(editMode());
+    dispatch(setId(id));
   };
+
   const onAddHandler = () => {
     setShowModal(true);
-    setIsEdit(false);
+    dispatch(addMode());
   };
+
   const onDeleteHandler = (id: string) => {
     if (window.confirm("삭제하시겠습니까?")) {
       deleteMutation(id);
@@ -42,13 +47,7 @@ const TodoList = () => {
   return (
     <div>
       {showModal && (
-        <Todocreate
-          id={id}
-          isEdit={isEdit}
-          showModal={showModal}
-          setShowModal={setShowModal}
-          setIsEdit={setIsEdit}
-        />
+        <Todocreate showModal={showModal} setShowModal={setShowModal} />
       )}
       <FormBox>
         <Button variant="outlined" onClick={() => navigate("/")}>
@@ -59,17 +58,24 @@ const TodoList = () => {
         </Button>
       </FormBox>
       <TodoListBox>
-        {todos?.map((item: Todos) => (
-          <TodoBox key={item.id}>
-            {item.title}
-            <div>
-              <Button onClick={() => onEditHandler(item.id)}>수정</Button>
-              <Button onClick={() => onDeleteHandler(item.id)} color="error">
-                삭제
-              </Button>
-            </div>
-          </TodoBox>
-        ))}
+        {todos &&
+          todos.map((item: Todos) => (
+            <TodoBox key={item.id}>
+              {item.title}
+              <div>
+                <Button type="button" onClick={() => onEditHandler(item.id)}>
+                  수정
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => onDeleteHandler(item.id)}
+                  color="error"
+                >
+                  삭제
+                </Button>
+              </div>
+            </TodoBox>
+          ))}
       </TodoListBox>
     </div>
   );
