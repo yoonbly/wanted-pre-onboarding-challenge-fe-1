@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import FormControl from "@mui/material/FormControl";
 import Grid from "@mui/material/Grid";
 import { Button } from "@mui/material";
 import { userCreate } from "../api/authApi";
+import { emailValid, passwordValid } from "../utils/validation";
 
 const SignUpForm = () => {
   const [inputs, setInputs] = useState({
@@ -12,27 +13,9 @@ const SignUpForm = () => {
     password: "",
     pwconfirm: "",
   });
-  const [isValid, setIsValid] = useState({
-    isEmail: false,
-    isPassword: false,
-    isPwConfirm: false,
-  });
 
   const { email, password, pwconfirm } = inputs;
   const user = { email, password };
-
-  const validation = {
-    emailValid: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g,
-    passwordValid: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}/g,
-  };
-
-  useEffect(() => {
-    setIsValid({
-      isEmail: validation.emailValid.test(email),
-      isPassword: validation.passwordValid.test(password),
-      isPwConfirm: password === pwconfirm,
-    });
-  }, [inputs]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -46,7 +29,6 @@ const SignUpForm = () => {
     e.preventDefault();
     userCreate(user);
   };
-
   return (
     <div>
       <h3 style={{ textAlign: "center" }}>회원가입</h3>
@@ -70,9 +52,9 @@ const SignUpForm = () => {
                 name="email"
                 value={email}
                 onChange={onChange}
-                error={!isValid.isEmail && email.length ? true : false}
+                error={email.length !== 0 && !emailValid(email)}
                 helperText={
-                  !isValid.isEmail && email.length
+                  email.length !== 0 && !emailValid(email)
                     ? "이메일 형식이 아닙니다."
                     : ""
                 }
@@ -87,9 +69,9 @@ const SignUpForm = () => {
                 name="password"
                 value={password}
                 onChange={onChange}
-                error={!isValid.isPassword && password.length ? true : false}
+                error={password.length !== 0 && !passwordValid(password)}
                 helperText={
-                  !isValid.isPassword && password.length
+                  password.length !== 0 && !passwordValid(password)
                     ? "비밀번호는 숫자, 영문자를 포함한 8글자 이상이어야 합니다."
                     : ""
                 }
@@ -104,9 +86,9 @@ const SignUpForm = () => {
                 name="pwconfirm"
                 value={pwconfirm}
                 onChange={onChange}
-                error={!isValid.isPwConfirm && pwconfirm.length ? true : false}
+                error={pwconfirm.length !== 0 && !(password === pwconfirm)}
                 helperText={
-                  !isValid.isPwConfirm && pwconfirm.length
+                  pwconfirm.length !== 0 && !(password === pwconfirm)
                     ? "비밀번호가 일치하지 않습니다."
                     : ""
                 }
@@ -120,7 +102,9 @@ const SignUpForm = () => {
             sx={{ mt: 3, mb: 2 }}
             size="large"
             disabled={
-              isValid.isEmail && isValid.isPassword && isValid.isPwConfirm
+              emailValid(email) &&
+              passwordValid(password) &&
+              password === pwconfirm
                 ? false
                 : true
             }
