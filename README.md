@@ -7,7 +7,7 @@
 
 ### 2. 기능 설명 => 🔨1차 리팩토링 => ⚒️ 2차 리팩토링
 - 로그인
-  - 이메일 및 비밀번호 유효성 확인하여 메시지 출력
+  - 이메일 및 비밀번호 유효성 확인하여 메시지 출력 => ⚒️ validation useState 제거
   - 로그인 성공 시 홈화면으로 이동  => ⚒️ redux-toolkit으로 로그인 상태 관리 : Header, Home에서 사용
   - 로그인 실패 시 alert창으로 에러메세지 출력 => 🔨 axios error type 변경
 - 회원가입
@@ -120,11 +120,50 @@ dependency array안에 reference type을 넣어줄 경우, 값이 같더라도 �
 3. 삭제 클릭 시 한번 확인받기
 `why`강의 때 삭제나 무언가를 파괴하는 행위는 한번 더 확인을 거쳐야한다고 하셔서, 삭제 버튼 클릭 시 confirm창으로 한번 확인 후 삭제 처리하도록 했다.
 ## ⚒️2차 리팩토링
-1. redux-toolkit으로 로그인 상태 관리   
+1. validation useState제거 
+`why`강의 때 validation을 하나하나 useState로 관리할 필요가 없다고, 값을 바로 test해서 true/false를 받으라고 하셨다.
+첫 리팩토링 때는 생각했던대로 구현되지 않아서 state를 묶어주기만 했다.  
+찾아보니 true/false를 반환하는 validation함수를 만들어서 값을 넣어주는 방법이 있었고, 아래와 같이 바꿀 수 있었다.
+- 코드
+```
+// validation.ts
+const emailValid = (email: string) => {
+  const isEmail = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+  return isEmail.test(email);
+};
+const passwordValid = (password: string) => {
+  const isPassword = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}/g;
+  return isPassword.test(password);
+};
+
+export { emailValid, passwordValid };
+```
+```
+return( 
+...
+              <TextField
+                label="이메일"
+                variant="outlined"
+                fullWidth
+                type="email"
+                name="email"
+                value={email}
+                onChange={onChange}
+		            error={email.length !== 0 && !emailValid(email)}
+                helperText={
+                  email.length !== 0 && !emailValid(email)
+                    ? "이메일 형식이 아닙니다."
+                    : ""
+                }
+              />
+...
+)
+```
+2. redux-toolkit으로 로그인 상태 관리   
 `why?`redux-toolkit을 처음 배우는터라, 연습 삼아 작성해보았다.   
 사실 localStorage에서 토큰을 받아와 확인해도 되는 부분인데, 굳이 구현할 필요가 있을까..? 싶은 생각이 들었다.  
 코드 보기 : [05b140f](https://github.com/starkoora/wanted-pre-onboarding-challenge-fe-1-api/commit/05b140f6f6d5c464310c0932e107a97a0e2aa909)
-2. redux-toolkit으로 추가 및 수정, id값 관리   
+3. redux-toolkit으로 추가 및 수정, id값 관리   
 `why?`추가, 수정 모드와 id값은 TodoList컴포넌트에서 TodoCreate컴포넌트 props로 내려주고 있는 부분인데, 두 컴포넌트 모두 사용하고 있어서 전역상태관리가 필요했다.   
 - 코드
 ```
@@ -171,7 +210,7 @@ const todoSlice = createSlice({
 export const { editMode, addMode, setId } = todoSlice.actions;
 export default todoSlice.reducer;
 ```
-3. UI 구현   
+4. UI 구현   
 `why?`기능구현에만 초점을 둬서 UI의 완성도가 떨어졌었다.   
 우선 헤더, 푸터, 메인으로 감싸주는 레이아웃을 설정해주었다.
 내용이 많지 않아 모바일에 적합하다고 생각했기에, 모바일 우선으로 디자인을 했고 반응형으로 구현했다.   
