@@ -120,10 +120,10 @@ dependency array안에 reference type을 넣어줄 경우, 값이 같더라도 �
 3. 삭제 클릭 시 한번 확인받기
 `why`강의 때 삭제나 무언가를 파괴하는 행위는 한번 더 확인을 거쳐야한다고 하셔서, 삭제 버튼 클릭 시 confirm창으로 한번 확인 후 삭제 처리하도록 했다.
 ## ⚒️2차 리팩토링
-1. validation useState제거 
-`why`강의 때 validation을 하나하나 useState로 관리할 필요가 없다고, 값을 바로 test해서 true/false를 받으라고 하셨다.
-첫 리팩토링 때는 생각했던대로 구현되지 않아서 state를 묶어주기만 했다.  
-찾아보니 true/false를 반환하는 validation함수를 만들어서 값을 넣어주는 방법이 있었고, 아래와 같이 바꿀 수 있었다.
+1. validation useState제거    
+`why`강의 때 validation을 하나하나 useState로 관리할 필요가 없다고, 값을 바로 test해서 true/false를 받으라고 하셨다.   
+첫 리팩토링 때는 생각했던대로 작동하지 않아서 state를 묶어주기만 했다.     
+찾아보니 true/false를 반환하는 validation함수를 만들어서 값을 넣어주는 방법이 있었고, 아래와 같이 바꿀 수 있었다.   
 - 코드
 ```
 // validation.ts
