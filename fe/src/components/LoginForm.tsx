@@ -1,35 +1,21 @@
 import { Box, Button, FormControl, Grid, TextField } from "@mui/material";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { userLogin } from "../api/authApi";
 import { useAppDispatch } from "../redux/hooks";
 import { Link } from "react-router-dom";
 import { loginAccout } from "../redux/userSlice";
+import { emailValid, passwordValid } from "../utils/validation";
 
 const LoginForm = () => {
   const [inputs, setInputs] = useState({
     email: "",
     password: "",
   });
-  const [isValid, setIsValid] = useState({
-    isEmail: false,
-    isPassword: false,
-  });
+
   const dispatch = useAppDispatch();
 
   const { email, password } = inputs;
   const user = { email, password };
-
-  const validation = {
-    emailValid: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g,
-    passwordValid: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}/g,
-  };
-
-  useEffect(() => {
-    setIsValid({
-      isEmail: validation.emailValid.test(email),
-      isPassword: validation.passwordValid.test(password),
-    });
-  }, [inputs]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -66,9 +52,9 @@ const LoginForm = () => {
                 name="email"
                 value={email}
                 onChange={onChange}
-                error={!isValid.isEmail && email.length ? true : false}
+                error={email.length !== 0 && !emailValid(email)}
                 helperText={
-                  !isValid.isEmail && email.length
+                  email.length !== 0 && !emailValid(email)
                     ? "이메일 형식이 아닙니다."
                     : ""
                 }
@@ -83,9 +69,9 @@ const LoginForm = () => {
                 type="password"
                 value={password}
                 onChange={onChange}
-                error={!isValid.isPassword && password.length ? true : false}
+                error={password.length !== 0 && !passwordValid(password)}
                 helperText={
-                  !isValid.isPassword && password.length
+                  password.length !== 0 && !passwordValid(password)
                     ? "비밀번호는 숫자, 영문자를 포함한 8글자 이상이어야 합니다."
                     : ""
                 }
@@ -98,7 +84,9 @@ const LoginForm = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
             size="large"
-            disabled={isValid.isEmail && isValid.isPassword ? false : true}
+            disabled={
+              emailValid(email) && passwordValid(password) ? false : true
+            }
           >
             로그인
           </Button>
